@@ -8,6 +8,7 @@ def partition_values_from_index(values, start_index, total_value, unassigned_val
             # This is an improvement. Save it. 
             best_err[0] = test_err 
             best_assignment[:] = test_assignment[:] 
+            #print(f"best error improvement: {best_err[0]}")
 
     else: 
         # See if there's any way we can assign the remaining items to improve the solution. 
@@ -19,7 +20,9 @@ def partition_values_from_index(values, start_index, total_value, unassigned_val
 
             # Try adding values[start_index] to set 1. 
             test_assignment[start_index] = True 
-            print("test_assignment=true") 
+            #print("test_assignment=true")
+            #print(f"partition(start_index={start_index+1}, unassigned_value={unassigned_value}, test_assignment={test_assignment}, test_value={test_value+values[start_index]}, best_assignment={best_assignment}, best_err={best_err[0]})") 
+ 
             partition_values_from_index(values, start_index + 1, 
                                          total_value, unassigned_value, 
                                          test_assignment, test_value + values[start_index], 
@@ -27,7 +30,8 @@ def partition_values_from_index(values, start_index, total_value, unassigned_val
  
             # Try adding values[start_index] to set 2. 
             test_assignment[start_index] = False 
-            print("test_assignment=false") 
+            #print("test_assignment=false")
+            #print(f"partition(start_index={start_index+1}, unassigned_value={unassigned_value}, test_assignment={test_assignment}, test_value={test_value}, best_assignment={best_assignment}, best_err={best_err[0]})") 
             partition_values_from_index(values, start_index + 1, 
                                          total_value, unassigned_value, 
                                          test_assignment, test_value, 
@@ -36,7 +40,7 @@ def partition_values_from_index(values, start_index, total_value, unassigned_val
 def partition_values_from_index_bf(values, start_index, total_value, 
                                 test_assignment, test_value, 
                                 best_assignment, best_err): 
-
+    # simulasi exhaustive search/brute force
     if start_index >= len(values): 
         # We're done. See if this assignment is better than what we have so far. 
         test_err = abs(2 * test_value - total_value) 
@@ -47,7 +51,8 @@ def partition_values_from_index_bf(values, start_index, total_value,
     else: 
         # Try adding values[start_index] to set 1. 
         test_assignment[start_index] = True 
-        print("test_assignment=true") 
+        #print("test_assignment=true")
+        #print(f"partition(start_index={start_index+1}, test_assignment={test_assignment}, test_value={test_value+values[start_index]}, best_assignment={best_assignment}, best_err={best_err})") 
         partition_values_from_index_bf(values, start_index + 1, 
                                      total_value, test_assignment, 
                                      test_value + values[start_index], 
@@ -55,12 +60,13 @@ def partition_values_from_index_bf(values, start_index, total_value,
         
         # Try adding values[start_index] to set 2. 
         test_assignment[start_index] = False 
-        print("test_assignment=false") 
+        #print("test_assignment=false") 
+        #print(f"partition(start_index={start_index+1}, test_assignment={test_assignment}, test_value={test_value}, best_assignment={best_assignment}, best_err={best_err})") 
         partition_values_from_index_bf(values, start_index + 1, 
                                      total_value, test_assignment, test_value, 
                                      best_assignment, best_err) 
 
-def find_partition(arr):
+def check_partition_dp(arr):
     sum = 0
     i, j = 0, 0
     n = len(arr)
@@ -94,25 +100,19 @@ def find_partition(arr):
                               part[i - arr[j - 1]][j - 1])
     
     # print table
-    for col in part:
-        print(col)
+    #for col in part:
+    #    print(col)
  
     return part[sum // 2][n]
 
-# Example usage: 
-values = [1,2,3] 
-test_assignment = [False] * len(values) 
-best_assignment = [False] * len(values) 
-best_err = [float('inf')]  # Using a list to mimic pass by reference 
 
-#partition_values_from_index(values, 0, sum(values), sum(values), test_assignment, 0, best_assignment, best_err) 
-#partition_values_from_index_bf(values, 0, sum(values), test_assignment, 0, best_assignment, best_err) 
+def check_partition_bnb(values):
+    test_assignment = [False] * len(values) 
+    best_assignment = [False] * len(values) 
+    best_err = [float('inf')]
 
-print(find_partition(values))
+    partition_values_from_index(values, 0, sum(values), sum(values), test_assignment, 0, best_assignment, best_err) 
 
-#if best_err[0] != float('inf'): 
-#    print("Best assignment found:", best_assignment) 
-#    print("Best error:", best_err[0]) 
-
-#else: 
-#    print("No valid partition found.") 
+    if best_err[0] == 0:
+        return True
+    return False
